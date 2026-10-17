@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annuity Calculator</title>
+    <!-- Mengimpor font Poppins dari Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #F6F4E8;
+            color: #DC9B9B;
+        }
+        h1, h2 {
+            color: #DC9B9B;
+            font-weight: 600;
+        }
+        /* Bagian nama tanpa background */
+        .team-info {
+            margin: 20px 0;
+        }
+        .team-info h3 {
+            margin-top: 0;
+            color: #DC9B9B;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .team-info ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #DC9B9B;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #DC9B9B;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #C0E1D2;
+            border-radius: 6px;
+            background-color: #ffffff;
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #DC9B9B;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+        }
+        button:hover {
+            background-color: #c78787;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #E5EEE4;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #C0E1D2;
+            padding: 10px;
+            text-align: right;
+            color: #333;
+        }
+        th {
+            background-color: #C0E1D2;
+            color: #555;
+            text-align: center;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #F6F4E8;
+        }
+        td:first-child {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Annuity Calculator</h1>
+    <h2>Hitung Angsuran Anuitas</h2>
+
+    <div class="team-info">
+        <h3>Kelompok 7 XI-1:</h3>
+        <ul>
+            <li>Alvian Deryl Faradi (1)</li>
+            <li>Nesya Alifia Hanifah (23)</li>
+            <li>Neysa Anindya Gurnita (24)</li>
+            <li>Ridlo Muhammad Nadhif (35)</li>
+            <li>Syaima Nabilah Mutawali (37)</li>
+        </ul>
+    </div>
+
+    <form id="annuityForm">
+        <div class="form-group">
+            <label for="principal">Jumlah Pinjaman (Rp):</label>
+            <input type="number" id="principal" required>
+        </div>
+
+        <div class="form-group">
+            <label for="rate">Suku Bunga per Tahun (%):</label>
+            <input type="number" step="0.01" id="rate" required>
+        </div>
+
+        <div class="form-group">
+            <label for="periods">Jangka Waktu (Bulan):</label>
+            <input type="number" id="periods" required>
+        </div>
+
+        <button type="submit">Hitung</button>
+    </form>
+
+    <h2>Hasil Perhitungan</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Bulan</th>
+                <th>Angsuran Pokok (Rp)</th>
+                <th>Angsuran Bunga (Rp)</th>
+                <th>Total Anuitas (Rp)</th>
+                <th>Sisa Saldo (Rp)</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody">
+            <!-- Hasil hitungan akan muncul di sini -->
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById('annuityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const principal = parseFloat(document.getElementById('principal').value);
+            const annualRate = parseFloat(document.getElementById('rate').value);
+            const months = parseInt(document.getElementById('periods').value);
+
+            const monthlyRate = (annualRate / 100) / 12;
+            const annuity = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+
+            let balance = principal;
+            const resultBody = document.getElementById('resultBody');
+            resultBody.innerHTML = '';
+
+            for (let i = 1; i <= months; i++) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = annuity - interestPayment;
+                balance -= principalPayment;
+
+                const remainingBalance = balance < 0 ? 0 : balance;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td>${principalPayment.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                    <td>${interestPayment.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                    <td>${annuity.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                    <td>${remainingBalance.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                `;
+                resultBody.appendChild(row);
+            }
+        });
+    </script>
+</body>
+</html>
